@@ -1,0 +1,36 @@
+body {
+    max-width: 800px;
+    padding: 2em 3%;
+    font-family: sans-serif;
+    margin: auto;
+}
+.upload-progress {
+    width: 596px;
+    height: 25px;
+    background-color: white;
+    margin: 10px 2px;
+    clear: both;
+}
+.upload-progress .chunk {
+    background-color: green;
+    display: inline-block;
+}
+.info, .info a {
+    color: #ddd;
+}
+.email {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+}
+textarea {
+    width: 100%;
+    border: 0;
+    background-color: #f9f9f9;
+    font-family: Menlo, monospace;
+    font-size: 12px;
+}
+hr {
+    margin: 4em 0 1em 0;
+    border: 0;
+    border-top: solid 1px #ddd;
+}

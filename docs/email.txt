@@ -1,0 +1,30 @@
+Hi Reid,
+
+Here's the test. This is going to be a good deal of work, and should test your skills pretty well. Let's set the deadline to finish by the end of this week (Sunday).
+
+1 - Set up a web page where I can upload a video. Here is the uploader you will need to integrate -- https://github.com/cinely/mule-uploader. It uses S3 as a backend. You'll need to set up an AWS account and S3 bucket if you don't already have one.
+
+2 - I am going to upload these three videos: 
+
+- https://s3.amazonaws.com/akiai-testing/Elegy_1080p+-+162.5+MB+-+2m12s.mov
+- https://s3.amazonaws.com/akiai-testing/StormyCalifornia-Fire_Final.mov
+- https://s3.amazonaws.com/akiai-testing/bite-size-animation.mov
+
+3 - Transcode the videos into an iPhone-like profile (you can make up the profile, the specifics don't matter).
+
+4 - On the website, you'll show a link to download the old video (not the link I sent above, but you'll store it wherever it's being uploaded to) and a link to download the new file. For each file, show the basic information:
+
+- Frame rate
+- Resolution
+- # audio channels
+- Length
+- Bitrate
+- Size
+
+5 - Provide a website url and github repository for us to test the site and look over your code.
+
+I know this will be a bit of work, but I'm very excited to see your background and I think you have a great resume and have written some nice and useful applications before. I'm very much looking forward to seeing what you can do with this.
+
+Thanks,
+
+David
