@@ -1,5 +1,21 @@
 # models.py
 
+from sqlalchemy import create_engine, Column, Integer
+from sqlalchemy import String, DateTime, Text, MetaData
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
+from settings import ENGINE
+
+## The Upload DB Model
+engine = create_engine(ENGINE, convert_unicode=True)
+db = scoped_session(sessionmaker(
+    autocommit=False, autoflush=True, bind=engine))
+
+Base = declarative_base()
+Base.query = db.query_property()
+metadata = MetaData()
+
 class Upload(Base):
     __tablename__ = 'upload'
     id = Column(Integer, primary_key=True)
@@ -16,11 +32,11 @@ class Upload(Base):
 
 Upload.metadata.create_all(bind=engine)
 
-class Transcode(Base):
-	__tablename__ = 'transcode'
-	id
-	filename # s3 key
-	last_modified
-	state = pending|transcode|upload|done
-	percent
+# class Transcode(Base):
+# 	__tablename__ = 'transcode'
+# 	id
+# 	filename # s3 key
+# 	last_modified
+# 	state = pending|transcode|upload|done
+# 	percent
 
