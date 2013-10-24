@@ -4,7 +4,7 @@ import sys
 import subprocess
 
 def usage():
-	return 'python make.py [stage]\n'
+    return 'python make.py [stage|serve]\n'
 
 def bash(cmd):
 	subprocess.call(cmd, shell=True)
@@ -28,11 +28,16 @@ def stage():
 		args=['--archive', '--checksum', '--verbose']
 	)
 	bash('ssh reidransom@reidransom.com ./webapps/upload_wsgi/apache2/bin/restart')
+def serve():
+    from reiduploader.views import app
+    from reiduploader.settings import PORT
+    app.run(host='0.0.0.0', port=PORT)
 
 if __name__ == '__main__':
-	if len(sys.argv) < 2:
-		sys.stderr.write(usage())
-		sys.exit(1)
-	if sys.argv[1] == 'stage':
-		stage()
-		sys.exit()
+    
+    if len(sys.argv) < 2:
+        sys.stderr.write(usage())
+        sys.exit(1)
+    
+    locals()[sys.argv[1]]()
+    sys.exit()
