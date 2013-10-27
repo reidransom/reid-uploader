@@ -43,3 +43,4 @@ Thumbs.db
 ignore
 env
 database.db
+.sass-cache
