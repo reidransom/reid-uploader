@@ -4,6 +4,14 @@ function reid_upload (config) {
 
     var log_el = $('#log')
 
+    function get_random (min, max) {
+        return Math.floor(Math.random() * (max - min) + min)
+    }
+
+    function get_safe_filename (filename) {
+        return filename.replace(/[^a-zA-Z0-9\.-]/g, '')
+    }
+
     function format_size (num_bytes) {
         if (num_bytes <= 1024 * 0.8) {
             return num_bytes + " B"
@@ -26,9 +34,12 @@ function reid_upload (config) {
 
     // Return the filename's extension
     // todo: check that this is an alpha-numeric string and make all lowercase
-    function get_file_ext (filename) {
+    function file_splitext (filename) {
         var parts = filename.split('.')
-        return '.' + parts[parts.length - 1]
+        if (parts.length === 1) {
+            return parts
+        }
+        return [parts.slice(0, parts.length-1).join('.'), parts[parts.length - 1]]
     }
 
     var last_update = null;
@@ -43,7 +54,20 @@ function reid_upload (config) {
             uplog("File selected\n");
 
             // todo: append the entire filename.  strip out non-whitelisted characters.
-            this.settings.key += get_file_ext(fileObj.name)
+            // this.settings.key += get_file_ext(fileObj.name)
+            var key = get_random(999999, 100000) + '-' + get_safe_filename(fileObj.name),
+                file_parts = file_splitext(key)
+            // if (file_parts.length < 2) {
+            //     console.error('Invalid file extension.')
+            //     return
+            // }
+            file_parts[1] = file_parts[1].toLowerCase()
+            // if (['mov', 'mp4', 'ogv', 'flv', 'mkv', 'm4v', 'mxf'].indexOf(file_parts[1]) === -1) {
+            //     console.error('Invalid file extension.')
+            //     return
+            // }
+
+            this.settings.key = file_parts.join('.')
 
             var size = fileObj.size;
             var num_chunks = Math.ceil(size / (6 * 1024 * 1024));
