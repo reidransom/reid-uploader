@@ -11,7 +11,7 @@
         <p><div class="upload-progress"></div></p>
         <p><textarea id="log" rows="10"></textarea></p>
         <hr />
-        <ul>
+        <ul class="videos">
         {% for video in videos %}
             <a href="{{ video.url }}">
                 <li>{{ video.key }}
@@ -29,6 +29,8 @@
             </a>
         {% endfor %}
         </ul>
+        <hr class="clear" />
+        <hr />
         <script type="text/javascript" src="static/js/jquery-1.10.2.js"></script>
         <script type="text/javascript" src="static/js/mule-uploader.js"></script>
         <script type="text/javascript" src="static/js/main.js"></script>
