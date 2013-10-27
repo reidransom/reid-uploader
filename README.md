@@ -2,6 +2,14 @@
 * Development - <http://localhost:5000/>
 * Staging - <http://upload.reidransom.com/>
 
+## dependencies
+
+* [ffmpeg](http://ffmpeg.org/)
+  * [from source](https://github.com/stvs/ffmpeg-static) - recommended because it includes libfaac
+  * [osx builds](http://www.evermeet.cx/ffmpeg/)
+  * [linux builds](http://ffmpeg.gusari.org/static/)
+* [sqlalchemy](http://docs.sqlalchemy.org/en/rel_0_8/)
+
 ## workflow
 * mule_upload to s3
 * http stream from s3 to avconv
@@ -17,6 +25,8 @@ Adv: fast, data never hits the hard disk
 
 Dis: can't work sox into this for mixing down 5.1 (maybe mplayer could do the a/v transcode as well as audio mixdown)
 
+* not sure this is possible considering the latest qtfaststart.py doesn't modify videos in place.
+
 ### create a temp localfile
 
 	browser > s3 > ffmpeg (h264, audio copy) > localfile
@@ -28,11 +38,23 @@ Adv: manipulate the file as much as you want
 
 Dis: slower, potentially involves storing lots of data on the hard disk
 
+### web interface
+
+initial page load - include a list of all videos
+
+check for new videos each minute - browser sends last time checked, server sends list of vids added since
+
+progress (extra) - while videos are being uploaded / transcoded, poll the server for updates every 5 seconds or so
+
 ## todo
-* Use [boto.s3.key.Key.set_contents_from_file](https://github.com/boto/boto/blob/develop/boto/s3/key.py#L1063) to stream from avconv to s3:
-* Adapt qtfaststart.py to work with s3
 * move database.db out of the web root
 * stop mule_uploader from giving everything mimetype = application/octet-stream (see mule_uploader.js and settings.py/reiduploader.py)
+* account for video or audio only files
+* account for multiple audio *streams*
+* stereo mixdown with sox
+* consider [multichannel downsampling with ffmpeg](http://muzso.hu/2009/02/25/downsampling-multichannel-audio-5.1-into-stereo-2-channels-with-ffmpeg)
+* test links on iphone
+* include original video name in database
 
 ## references
 * [mule uplaoder](https://github.com/cinely/mule-uploader)
@@ -42,6 +64,8 @@ Dis: slower, potentially involves storing lots of data on the hard disk
 * [python on webfaction](http://docs.webfaction.com/software/python.html)
 * [h264 settings for ios](http://blog.zencoder.com/2012/01/24/encoding-settings-for-perfect-ipadiphone-video/)
 * [Using setfacl and getfacl on webfaction](https://docs.webfaction.com/software/general.html#setting-file-permissions)
+* [S3 Tutorial](http://docs.pythonboto.org/en/latest/s3_tut.html)
+* [S3 API Reference](http://docs.pythonboto.org/en/latest/ref/s3.html)
 
 ## good iOS preset
 

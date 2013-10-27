@@ -1,26 +1,23 @@
-from flask import Flask, request, render_template
-from werkzeug import SharedDataMiddleware
-from hashlib import sha1
-from settings import DEBUG, AWS_ACCESS_KEY, AWS_SECRET, MIME_TYPE, BUCKET
-from settings import PORT, CHUNK_SIZE
-
 import os
 import hmac
 import base64
 import time
 import json
 import random
+from hashlib import sha1
 
-from models import engine, metadata, db, Upload
+from flask import Flask, request, render_template
+from werkzeug import SharedDataMiddleware
+
+import helper
+from models import db, Upload, Video
+from settings import DEBUG, AWS_ACCESS_KEY, AWS_SECRET, MIME_TYPE, BUCKET
+from settings import PORT, CHUNK_SIZE
 
 ## Boilerplate
 
 app = Flask(__name__)
 app.debug = DEBUG
-
-def init_db():
-    metadata.create_all(bind=engine)
-init_db()
 
 @app.teardown_request
 def teardown_db(exception=None):
@@ -65,6 +62,14 @@ def _action_delete(key, upload_id, date=None):
     date = date or _http_date()
     return _process_string("DELETE\n\n\n\nx-amz-date:{}\n/{}/{}?uploadId={}".format(
                            date, BUCKET, key, upload_id)), date
+
+def start_worker(key):
+    # start up the worker process
+    import subprocess
+    worker = os.path.join(os.path.dirname(__file__), 'worker.py')
+    print worker
+    print key
+    subprocess.Popen([worker, key]).pid
 
 ## URLs
 
@@ -164,10 +169,12 @@ def upload_action(action):
 
     elif action == 'get_end_signature':
         string, date = _action_end(key, upload_id)
-        # start up the iphone encode
 
     elif action == 'get_delete_signature':
         string, date = _action_delete(key, upload_id)
+
+    elif action == 'upload_finished':
+        start_worker(key)
 
     return json.dumps({
         'signature': string,
@@ -178,12 +185,16 @@ def upload_action(action):
 
 @app.route("/")
 def index():
+    videos = db.query(Video).all()
+    for i in range(len(videos)):
+        videos[i].url = helper.get_s3url(videos[i].key)
     return render_template(
             'index.html',
             aws_access_key=AWS_ACCESS_KEY,
             mime_type=MIME_TYPE,
             bucket=BUCKET,
-            key=str(random.randint(1, 1000000))
+            key=str(random.randint(1, 1000000)),
+            videos=videos
         )
 
 if app.debug:

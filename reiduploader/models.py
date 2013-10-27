@@ -19,18 +19,45 @@ metadata = MetaData()
 class Upload(Base):
     __tablename__ = 'upload'
     id = Column(Integer, primary_key=True)
-    filename = Column(String(256))
-    filesize = Column(String(64))
-    last_modified = Column(String(64))
-
+    filename = Column(String)
+    filesize = Column(String)
+    last_modified = Column(String)
     upload_start = Column(DateTime)
     last_information = Column(DateTime)
-
-    key = Column(String(256))
-    upload_id = Column(String(128))
+    key = Column(String)
+    upload_id = Column(String)
     chunks_uploaded = Column(Text)
 
 Upload.metadata.create_all(bind=engine)
+
+class Video(Base):
+    __tablename__ = 'video'
+    id = Column(Integer, primary_key=True)
+    key = Column(String)
+    framerate = Column(Integer)            # framerate = fps * 1000
+    width = Column(Integer)
+    height = Column(Integer)
+    num_audio_channels = Column(Integer)   # ex: 2 for stereo, 6 for 5.1 surround
+    duration = Column(Integer)             # duration = total_seconds * 100
+    video_bitrate = Column(Integer)        # kilobits per second
+    audio_bitrate = Column(Integer)        # kilobits per second
+    filesize = Column(Integer)             # bytes
+    added = Column(DateTime)
+
+    def total_seconds(self):
+        return float(self.duration) / 100
+
+    def total_bitrate(self):
+        if not self.filesize:
+            return 0
+        return int((float(self.filesize)*8/1024)/self.total_seconds())  # kilobits per second
+
+    def fps(self):
+        return float(self.framerate) / 1000
+
+Video.metadata.create_all(bind=engine)
+
+metadata.create_all(bind=engine)
 
 # class Transcode(Base):
 # 	__tablename__ = 'transcode'

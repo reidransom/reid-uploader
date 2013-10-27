@@ -1,0 +1,135 @@
+$ ffmpeg -i test-prores-3s.mov 
+ffmpeg version 2.0-static Copyright (c) 2000-2013 the FFmpeg developers
+  built on Oct 23 2013 01:29:06 with llvm-gcc 4.2.1 (LLVM build 2336.11.00)
+  configuration: --prefix=/Users/reid/tmp/ffmpeg-static/target --extra-version=static --disable-debug --disable-shared --enable-static --extra-cflags=--static --disable-ffplay --disable-ffserver --disable-doc --enable-gpl --enable-pthreads --enable-postproc --enable-gray --enable-runtime-cpudetect --enable-libfaac --enable-libmp3lame --enable-libtheora --enable-libvorbis --enable-libx264 --enable-libxvid --enable-bzlib --enable-zlib --enable-nonfree --enable-version3 --enable-libvpx --disable-devices
+  libavutil      52. 38.100 / 52. 38.100
+  libavcodec     55. 18.102 / 55. 18.102
+  libavformat    55. 12.100 / 55. 12.100
+  libavdevice    55.  3.100 / 55.  3.100
+  libavfilter     3. 79.101 /  3. 79.101
+  libswscale      2.  3.100 /  2.  3.100
+  libswresample   0. 17.102 /  0. 17.102
+  libpostproc    52.  3.100 / 52.  3.100
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'test-prores-3s.mov':
+  Metadata:
+    creation_time   : 2013-10-24 04:19:38
+    timecode        : 01:00:03:07
+  Duration: 00:00:03.55, start: 0.000000, bitrate: 163715 kb/s
+    Stream #0:0(eng): Audio: pcm_s16be (twos / 0x736F7774), 48000 Hz, stereo, s16, 1536 kb/s
+    Metadata:
+      creation_time   : 2013-10-24 04:19:38
+      handler_name    : Apple Alias Data Handler
+    Stream #0:1(eng): Video: prores (apch / 0x68637061), yuv422p10le, 1920x1080, 161561 kb/s, 23.98 fps, 23.98 tbr, 23976 tbn, 23976 tbc
+    Metadata:
+      creation_time   : 2013-10-24 04:19:38
+      handler_name    : Apple Alias Data Handler
+    Stream #0:2(eng): Data: none (tmcd / 0x64636D74), 0 kb/s
+    Metadata:
+      creation_time   : 2013-10-24 04:19:41
+      handler_name    : Apple Alias Data Handler
+      timecode        : 01:00:03:07
+At least one output file must be specified
+
+$ curl <url> | ffmpeg -i - out-iphone.mp4
+ffmpeg version 2.0-static Copyright (c) 2000-2013 the FFmpeg developers
+  built on Oct 23 2013 01:29:06 with llvm-gcc 4.2.1 (LLVM build 2336.11.00)
+  configuration: --prefix=/Users/reid/tmp/ffmpeg-static/target --extra-version=static --disable-debug --disable-shared --enable-static --extra-cflags=--static --disable-ffplay --disable-ffserver --disable-doc --enable-gpl --enable-pthreads --enable-postproc --enable-gray --enable-runtime-cpudetect --enable-libfaac --enable-libmp3lame --enable-libtheora --enable-libvorbis --enable-libx264 --enable-libxvid --enable-bzlib --enable-zlib --enable-nonfree --enable-version3 --enable-libvpx --disable-devices
+  libavutil      52. 38.100 / 52. 38.100
+  libavcodec     55. 18.102 / 55. 18.102
+  libavformat    55. 12.100 / 55. 12.100
+  libavdevice    55.  3.100 / 55.  3.100
+  libavfilter     3. 79.101 /  3. 79.101
+  libswscale      2.  3.100 /  2.  3.100
+  libswresample   0. 17.102 /  0. 17.102
+  libpostproc    52.  3.100 / 52.  3.100
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from 'pipe:':
+  Metadata:
+    major_brand     : qt  
+    minor_version   : 537199360
+    compatible_brands: qt  
+    creation_time   : 2009-02-23 23:30:24
+  Duration: 00:00:31.80, start: 0.000000, bitrate: N/A
+    Stream #0:0(eng): Audio: aac (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 126 kb/s
+    Metadata:
+      creation_time   : 2009-02-23 23:30:24
+      handler_name    : Apple Alias Data Handler
+    Stream #0:1(eng): Video: h264 (Main) (avc1 / 0x31637661), yuv420p, 640x360, 1095 kb/s, 29.97 fps, 29.97 tbr, 29970 tbn, 59940 tbc
+    Metadata:
+      creation_time   : 2009-02-23 23:30:24
+      handler_name    : Apple Alias Data Handler
+[libx264 @ 0x7f8dea838e00] using SAR=1/1
+[libx264 @ 0x7f8dea838e00] using cpu capabilities: MMX2 SSE2Fast SSSE3 SSE4.2
+[libx264 @ 0x7f8dea838e00] profile High, level 3.1
+[libx264 @ 0x7f8dea838e00] 264 - core 138 r50M 4bc1bf5 - H.264/MPEG-4 AVC codec - Copyleft 2003-2013 - http://www.videolan.org/x264.html - options: cabac=1 ref=3 deblock=1:1:0 analyse=0x3:0 me=hex subme=7 psy=1 psy_rd=1.00:0.00 mixed_ref=1 me_range=16 chroma_me=1 trellis=1 8x8dct=1 cqm=0 deadzone=21,11 fast_pskip=1 chroma_qp_offset=-4 threads=36 lookahead_threads=4 sliced_threads=0 nr=0 decimate=1 interlaced=0 bluray_compat=0 constrained_intra=0 bframes=3 b_pyramid=2 b_adapt=1 b_bias=0 direct=1 weightb=1 open_gop=0 weightp=2 keyint=240 keyint_min=24 scenecut=40 intra_refresh=0 rc_lookahead=40 rc=crf mbtree=1 crf=22.0 qcomp=0.60 qpmin=0 qpmax=69 qpstep=4 vbv_maxrate=17500 vbv_bufsize=17500 crf_max=0.0 nal_hrd=none ip_ratio=1.40 aq=1:1.00
+Output #0, mp4, to 'out.mp4':
+  Metadata:
+    major_brand     : qt  
+    minor_version   : 537199360
+    compatible_brands: qt  
+    encoder         : Lavf55.12.100
+    Stream #0:0(eng): Video: h264 (libx264) ([33][0][0][0] / 0x0021), yuv420p, 960x540 [SAR 1:1 DAR 16:9], q=-1--1, 11988 tbn, 29.97 tbc
+    Metadata:
+      creation_time   : 2009-02-23 23:30:24
+      handler_name    : Apple Alias Data Handler
+    Stream #0:1(eng): Audio: aac (libfaac) ([64][0][0][0] / 0x0040), 48000 Hz, stereo, s16, 128 kb/s
+    Metadata:
+      creation_time   : 2009-02-23 23:30:24
+      handler_name    : Apple Alias Data Handler
+Stream mapping:
+  Stream #0:1 -> #0:0 (h264 -> libx264)
+  Stream #0:0 -> #0:1 (aac -> libfaac)
+frame=   28 fps=0.0 q=0.0 size=       0kB time=00:00:02.45 bitrate=   0.2kbits/s    
+frame=   32 fps= 28 q=0.0 size=       0kB time=00:00:02.92 bitrate=   0.1kbits/s    
+frame=   38 fps= 18 q=0.0 size=       0kB time=00:00:02.92 bitrate=   0.1kbits/s    
+frame=   44 fps= 15 q=0.0 size=       0kB time=00:00:03.05 bitrate=   0.1kbits/s    
+frame=   52 fps= 14 q=0.0 size=       0kB time=00:00:03.43 bitrate=   0.1kbits/s    
+frame=   58 fps= 14 q=0.0 size=       0kB time=00:00:03.45 bitrate=   0.1kbits/s    
+frame=   67 fps= 14 q=0.0 size=       0kB time=00:00:03.92 bitrate=   0.1kbits/s    
+frame=   74 fps= 14 q=0.0 size=       0kB time=00:00:03.92 bitrate=   0.1kbits/s    
+frame=  100 fps= 17 q=28.0 size=       2kB time=00:00:04.92 bitrate=   2.9kbits/s    
+frame=  115 fps= 18 q=28.0 size=       2kB time=00:00:05.41 bitrate=   3.6kbits/s    
+frame=  121 fps= 18 q=28.0 size=       3kB time=00:00:05.93 bitrate=   3.6kbits/s    
+frame=  137 fps= 19 q=28.0 size=      87kB time=00:00:06.42 bitrate= 110.6kbits/s    
+frame=  145 fps= 19 q=28.0 size=     124kB time=00:00:06.42 bitrate= 158.3kbits/s    
+frame=  173 fps= 21 q=28.0 size=     410kB time=00:00:07.42 bitrate= 452.4kbits/s    
+frame=  201 fps= 23 q=28.0 size=     547kB time=00:00:08.42 bitrate= 531.6kbits/s    
+frame=  213 fps= 23 q=28.0 size=     631kB time=00:00:08.91 bitrate= 579.7kbits/s    
+frame=  232 fps= 23 q=28.0 size=     781kB time=00:00:09.42 bitrate= 678.3kbits/s    
+frame=  238 fps= 23 q=28.0 size=     845kB time=00:00:09.42 bitrate= 733.9kbits/s    
+frame=  241 fps= 21 q=28.0 size=     890kB time=00:00:09.92 bitrate= 735.2kbits/s    
+frame=  246 fps= 20 q=25.0 size=     908kB time=00:00:09.92 bitrate= 750.0kbits/s    
+frame=  254 fps= 20 q=28.0 size=     925kB time=00:00:09.92 bitrate= 764.2kbits/s    
+frame=  261 fps= 20 q=28.0 size=     941kB time=00:00:10.43 bitrate= 738.7kbits/s    
+frame=  267 fps= 19 q=28.0 size=     978kB time=00:00:10.43 bitrate= 767.6kbits/s    
+frame=  284 fps= 20 q=28.0 size=    1049kB time=00:00:11.24 bitrate= 764.2kbits/s    
+frame=  314 fps= 21 q=28.0 size=    1157kB time=00:00:11.94 bitrate= 793.1kbits/s    
+frame=  364 fps= 24 q=25.0 size=    1519kB time=00:00:13.93 bitrate= 893.0kbits/s    
+frame=  444 fps= 28 q=28.0 size=    1915kB time=00:00:16.42 bitrate= 955.1kbits/s    
+frame=  478 fps= 29 q=28.0 size=    2070kB time=00:00:17.87 bitrate= 948.6kbits/s    
+frame=  568 fps= 34 q=28.0 size=    2596kB time=00:00:20.41 bitrate=1041.5kbits/s    
+frame=  638 fps= 37 q=28.0 size=    2975kB time=00:00:22.93 bitrate=1062.5kbits/s    
+frame=  715 fps= 40 q=28.0 size=    3373kB time=00:00:25.42 bitrate=1086.7kbits/s    
+frame=  800 fps= 44 q=28.0 size=    3780kB time=00:00:28.41 bitrate=1089.8kbits/s    
+frame=  888 fps= 47 q=28.0 size=    4041kB time=00:00:31.42 bitrate=1053.4kbits/s    
+Starting second pass: moving header on top of the file
+frame=  953 fps= 50 q=-1.0 Lsize=    4576kB time=00:00:31.80 bitrate=1178.5kbits/s    
+video:4051kB audio:491kB subtitle:0 global headers:0kB muxing overhead 0.736415%
+[libx264 @ 0x7f8dea838e00] frame I:39    Avg QP:20.43  size: 14997
+[libx264 @ 0x7f8dea838e00] frame P:486   Avg QP:21.17  size:  6139
+[libx264 @ 0x7f8dea838e00] frame B:428   Avg QP:21.34  size:  1353
+[libx264 @ 0x7f8dea838e00] consecutive B-frames: 31.8% 20.1% 14.5% 33.6%
+[libx264 @ 0x7f8dea838e00] mb I  I16..4: 22.2% 65.3% 12.5%
+[libx264 @ 0x7f8dea838e00] mb P  I16..4: 18.3%  0.0%  0.0%  P16..4: 44.3%  0.0%  0.0%  0.0%  0.0%    skip:37.5%
+[libx264 @ 0x7f8dea838e00] mb B  I16..4:  1.2%  0.0%  0.0%  B16..8: 22.7%  0.0%  0.0%  direct: 1.8%  skip:74.3%  L0:41.0% L1:54.4% BI: 4.6%
+[libx264 @ 0x7f8dea838e00] 8x8 transform intra:19.1% inter:84.9%
+[libx264 @ 0x7f8dea838e00] coded y,uvDC,uvAC intra: 27.1% 5.1% 1.9% inter: 12.6% 3.5% 0.8%
+[libx264 @ 0x7f8dea838e00] i16 v,h,dc,p: 38% 32% 10% 20%
+[libx264 @ 0x7f8dea838e00] i8 v,h,dc,ddl,ddr,vr,hd,vl,hu: 35% 25% 10%  4%  5%  6%  5%  5%  5%
+[libx264 @ 0x7f8dea838e00] i4 v,h,dc,ddl,ddr,vr,hd,vl,hu: 35% 26%  8%  4%  6%  6%  6%  4%  4%
+[libx264 @ 0x7f8dea838e00] i8c dc,h,v,p: 92%  5%  3%  0%
+[libx264 @ 0x7f8dea838e00] Weighted P-Frames: Y:28.6% UV:5.8%
+[libx264 @ 0x7f8dea838e00] ref P L0: 64.1% 11.5% 17.2%  6.7%  0.5%
+[libx264 @ 0x7f8dea838e00] ref B L0: 83.7% 13.5%  2.8%
+[libx264 @ 0x7f8dea838e00] ref B L1: 95.3%  4.7%
+[libx264 @ 0x7f8dea838e00] kb/s:1043.45
+
