@@ -22,13 +22,14 @@ for path in [CONFIG_ROOT, os.path.join(os.path.expanduser('~'), '.reiduploader')
 		ffmpeg = os.path.join(path, 'ffmpeg')
 		# should be read/writeable by apache
 		tmpdir = os.path.join(path, 'tmp')
+		database_url = 'sqlite:///' + os.path.join(path, 'database.db')
 		break
 
 BUCKET = os.environ.get('BUCKET', "reid-uploader")
 AWS_SECRET = os.environ.get('AWS_SECRET', aws_secret)
 AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY', aws_access_key)
 DEBUG = bool(int(os.environ.get('DEBUG', 1)))
-ENGINE = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
+ENGINE = os.environ.get('DATABASE_URL', database_url)
 PORT = int(os.environ.get('PORT', 5000))
 CHUNK_SIZE = 6 * 1024 * 1024  # CAREFUL! If you modify this, you have to
                               # clear the chunk database; I recommend
