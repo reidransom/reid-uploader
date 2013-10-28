@@ -66,6 +66,7 @@ function reid_upload (config) {
             // }
 
             this.settings.key = file_parts.join('.')
+            this.settings.content_type = this.settings.mime_types[file_parts[1]]
 
             var size = fileObj.size;
             var num_chunks = Math.ceil(size / (6 * 1024 * 1024));

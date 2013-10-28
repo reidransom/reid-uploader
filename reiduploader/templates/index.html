@@ -63,12 +63,13 @@
         <script type="text/javascript">
             $(function() {
                 reid_upload({
-                    access_key: "{{ aws_access_key }}",
-                    bucket: "{{ bucket }}",
-                    accepted_extensions: "{{ accepted_extensions }}"
-                    {% if ajax_base %}
-                        , ajax_base: "{{ ajax_base }}"
-                    {% endif %}
+                    access_key: '{{ aws_access_key }}',
+                    bucket: '{{ bucket }}',
+                    mime_types: {{ mime_types|safe }},
+                    accepted_extensions: '{{ accepted_extensions }}'
+                {% if ajax_base %}
+                    , ajax_base: '{{ ajax_base }}'
+                {% endif %}
                 })
             })
         </script>

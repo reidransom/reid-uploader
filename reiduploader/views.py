@@ -193,6 +193,7 @@ def index():
             aws_access_key=AWS_ACCESS_KEY,
             bucket=BUCKET,
             accepted_extensions=','.join(MIME_TYPES.keys()),
+            mime_types=json.dumps(MIME_TYPES),
             videos=reversed(videos)
         )
 
