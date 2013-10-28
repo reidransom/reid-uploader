@@ -138,9 +138,16 @@ def upload_to_s3(local_path, key=None):
     k.key = key
     k.set_contents_from_filename(local_path)
     k.set_canned_acl('public-read')
+    k.set_metadata('Content-Type', helper.get_mimetype(k.key))
     return k
 
 def _process_fullcopy(key):
+
+    # Set the content-type correctly
+    bucket = helper.get_bucket()
+    k = bucket.lookup(key)
+    k.copy(k.bucket, k.name, preserve_acl=True, metadata={'Content-Type': helper.get_mimetype(k.name)})
+
     orig_video = Video(key=key, status='downloading')
     db.add(orig_video)
     db.commit()

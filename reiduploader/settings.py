@@ -24,7 +24,6 @@ for path in [CONFIG_ROOT, os.path.join(os.path.expanduser('~'), '.reiduploader')
 		tmpdir = os.path.join(path, 'tmp')
 		break
 
-MIME_TYPE = os.environ.get('MIME_TYPE', "application/octet-stream")
 BUCKET = os.environ.get('BUCKET', "reid-uploader")
 AWS_SECRET = os.environ.get('AWS_SECRET', aws_secret)
 AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY', aws_access_key)
@@ -36,6 +35,12 @@ CHUNK_SIZE = 6 * 1024 * 1024  # CAREFUL! If you modify this, you have to
                               # setting it before having any real upload data
 FFMPEG = os.environ.get('FFMPEG', ffmpeg)
 TMPDIR = tmpdir
+
+MIME_TYPES = {
+	'mp4': 'video/mp4',
+	'mov': 'video/quicktime',
+}
+# MIME_TYPES.keys() is the list of allowed file extensions.
 
 # Fail on config errors
 

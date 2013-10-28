@@ -3,7 +3,6 @@ import hmac
 import base64
 import time
 import json
-import random
 from hashlib import sha1
 
 from flask import Flask, request, render_template
@@ -11,8 +10,8 @@ from werkzeug import SharedDataMiddleware
 
 import helper
 from models import db, Upload, Video
-from settings import DEBUG, AWS_ACCESS_KEY, AWS_SECRET, MIME_TYPE, BUCKET
-from settings import PORT, CHUNK_SIZE
+from settings import DEBUG, AWS_ACCESS_KEY, AWS_SECRET, BUCKET
+from settings import PORT, CHUNK_SIZE, MIME_TYPES
 
 ## Boilerplate
 
@@ -39,11 +38,11 @@ def _action_init(key, date=None):
         "POST\n\n\n\nx-amz-acl:public-read\nx-amz-date:{}\n/{}/{}?uploads".format(
             date, BUCKET, key)), date
 
-def _action_chunk(key, upload_id, chunk, date=None):
+def _action_chunk(key, upload_id, chunk, mime_type, date=None):
     date = date or _http_date()
     return _process_string(
         "PUT\n\n{}\n\nx-amz-date:{}\n/{}/{}?partNumber={}&uploadId={}".format(
-            MIME_TYPE, date, BUCKET, key, chunk, upload_id)), date
+            mime_type, date, BUCKET, key, chunk, upload_id)), date
 
 def _action_list(key, upload_id, date=None):
     date = date or _http_date()
@@ -51,11 +50,11 @@ def _action_list(key, upload_id, date=None):
         "GET\n\n\n\nx-amz-date:{}\n/{}/{}?uploadId={}".format(
             date, BUCKET, key, upload_id)), date
 
-def _action_end(key, upload_id, date=None):
+def _action_end(key, upload_id, mime_type, date=None):
     date = date or _http_date()
     return _process_string(
         "POST\n\n{}\n\nx-amz-date:{}\n/{}/{}?uploadId={}".format(
-        MIME_TYPE, date, BUCKET, key, upload_id)), date
+        mime_type, date, BUCKET, key, upload_id)), date
 
 
 def _action_delete(key, upload_id, date=None):
@@ -79,6 +78,7 @@ def upload_action(action):
     upload_id = request.args.get('upload_id')
     chunk = request.args.get('chunk')
     string = date = None
+    mime_type = helper.get_mimetype(key)
 
     if action == 'chunk_loaded':
         filename = request.args['filename']
@@ -117,10 +117,10 @@ def upload_action(action):
     if action == 'get_all_signatures':
         date = _http_date()
         list_signature, _ = _action_list(key, upload_id, date)
-        end_signature, _ = _action_end(key, upload_id, date)
+        end_signature, _ = _action_end(key, upload_id, mime_type, date)
         delete_signature, _ = _action_delete(key, upload_id, date)
         num_chunks = int(request.args['num_chunks'])
-        chunk_signatures = dict([(chunk, (_action_chunk(key, upload_id, chunk, date)))
+        chunk_signatures = dict([(chunk, (_action_chunk(key, upload_id, chunk, mime_type, date)))
                                 for chunk in xrange(1, num_chunks + 1)])
 
         return json.dumps({
@@ -162,13 +162,13 @@ def upload_action(action):
         string, date = _action_init(key)
 
     elif action == 'get_chunk_signature':
-        string, date = _action_chunk(key, upload_id, chunk)
+        string, date = _action_chunk(key, upload_id, chunk, mime_type)
 
     elif action == 'get_list_signature':
         string, date = _action_list(key, upload_id)
 
     elif action == 'get_end_signature':
-        string, date = _action_end(key, upload_id)
+        string, date = _action_end(key, upload_id, mime_type)
 
     elif action == 'get_delete_signature':
         string, date = _action_delete(key, upload_id)
@@ -191,10 +191,9 @@ def index():
     return render_template(
             'index.html',
             aws_access_key=AWS_ACCESS_KEY,
-            mime_type=MIME_TYPE,
             bucket=BUCKET,
-            key=str(random.randint(1, 1000000)),
-            videos=videos
+            accepted_extensions=','.join(MIME_TYPES.keys()),
+            videos=reversed(videos)
         )
 
 if app.debug:
