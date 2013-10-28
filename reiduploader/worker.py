@@ -11,17 +11,13 @@ from boto.s3.key import Key
 
 import helper
 from models import db, Video
-from settings import FFMPEG, TMPDIR
-
-# todo: this file should define a Video child class VideoWorker or something
+from settings import FFMPEG, TMPDIR, FFMPEG_PRESET
 
 import logging
 from logging.handlers import RotatingFileHandler
 log = logging.getLogger()
 log.setLevel(logging.DEBUG)
 log.addHandler(RotatingFileHandler(os.path.join(TMPDIR, 'reiduploader.worker.log'), maxBytes=30*1024, backupCount=10))
-
-_ffmpeg_iphone_preset = '-vcodec libx264 -acodec libfaac -ab 128k -ar 48k -aspect 16:9 -vf yadif,scale=960x540 -x264opts cabac=1:ref=3:deblock=1,0,0:analyse=0x3,0x113:me=hex:subme=7:psy=1:psy_rd=1.00,0.00:me_range=16:chroma_me=1:trellis=1:8x8dct=1:fast_pskip=1:chroma_qp_offset=-2:threads=36:sliced_threads=0:nr=0:interlaced=0:bluray_compat=0:constrained_intra=0:bframes=3:b_pyramid=2:b_adapt=1:b_bias=0:weightb=1:open_gop=0:weightp=2:keyint=240:keyint_min=24:scenecut=40:intra_refresh=0:rc_lookahead=40:mbtree=1:crf=22:qcomp=0.60:qpmin=0:qpmax=69:qpstep=4:vbv_maxrate=17500:vbv_bufsize=17500:crf_max=0.0:nal_hrd=none -movflags faststart'
 
 def usage():
     return 'transcode.py <s3_key>'
@@ -33,7 +29,6 @@ def get_ffmpeg_input_data(data):
         re.MULTILINE|re.DOTALL).group(1)
 
 def parse_ffmpeg_data(data):
-    log.debug('parse_ffmpeg_data')
     video = {}
     video_data = re.search('Video:.*', data, re.MULTILINE).group(0)
     audio_data = re.search('Audio:.*', data, re.MULTILINE).group(0)
@@ -79,8 +74,6 @@ def parse_ffmpeg_data(data):
         'Duration: (\d\d)\:(\d\d)\:(\d\d)\.(\d\d)',
         data,
         re.MULTILINE).groups())
-    # video['duration'] = ((hours*3600 + minutes*60 + seconds)*video['framerate']) + \
-    #                     ((decimal*video['framerate'])/100)
     video['duration'] = (hours*3600 + minutes*60 + seconds)*100 + decimal
     return video
 
@@ -96,10 +89,8 @@ def get_video_attrs(path, ffmpeg_data=None):
     attrs['filesize'] = os.stat(path).st_size
     return attrs
 
-def download_url(url, output_dir=TMPDIR, output_basename=None):
-    if not output_basename:
-        output_basename = os.path.basename(urlparse(url).path)
-    output_path = os.path.join(output_dir, output_basename)
+def download_url(url):
+    output_path = os.path.join(TMPDIR, os.path.basename(urlparse(url).path))
     cmd = ['curl', '-s', '-o', output_path, url]
     subprocess.call(cmd)
     return output_path
@@ -107,9 +98,7 @@ def download_url(url, output_dir=TMPDIR, output_basename=None):
 def make_iphone(input_path, output_path=None):
     if not output_path:
         output_path = os.path.splitext(input_path)[0] + '-iphone.mp4'
-    cmd = '%s -i %s %s -y %s' % \
-        (FFMPEG, input_path, _ffmpeg_iphone_preset, output_path)
-    cmd = [FFMPEG, '-i', input_path] + shlex.split(_ffmpeg_iphone_preset) + ['-y', output_path]
+    cmd = [FFMPEG, '-i', input_path] + shlex.split(FFMPEG_PRESET) + ['-y', output_path]
     data = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     return output_path, data
 
@@ -128,7 +117,7 @@ def make_iphone(input_path, output_path=None):
 #     db.add(video)
 #     db.commit()
 
-    # return output_path
+#     return output_path
 
 def upload_to_s3(local_path, key=None):
     if key is None:
