@@ -67,6 +67,8 @@ Account for files with multiple audio *streams*.
 
 Account for audio only files.
 
+Stream directly from S3 to `ffmpeg` then back up to S3 w/o creating temp files.  This would only work well for stream-able codecs.
+
 Properly mixdown 5.1/7.1 to stereo with `sox`.
 
 Realtime progress indicator.  This would involve parsing `ffmpeg` output as well as more database/ajax stuff.
