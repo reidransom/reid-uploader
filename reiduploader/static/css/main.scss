@@ -1,4 +1,5 @@
 $grey: #f3f3ff;
+$blue: rgba(68, 153, 255, 1);
 
 body {
     max-width: 800px;
@@ -9,12 +10,12 @@ body {
 .upload-progress {
     width: 596px;
     height: 25px;
-    background-color: white;
+    background-color: #fff;
     margin: 10px 2px;
     clear: both;
 }
 .upload-progress .chunk {
-    background-color: green;
+    background-color: $blue;
     display: inline-block;
 }
 .info, .info a {
@@ -34,7 +35,7 @@ textarea {
 hr {
     margin: 2em 0;
     border: 0;
-    border-top: solid 1px #ddd;
+    border-top: solid 1px $grey;
     &.clear {
         clear: both;
         border: 0;
@@ -51,6 +52,7 @@ hr {
     font-size: 14px;
     a {
         text-decoration: none;
+        color: $blue;
         &:hover > li {
             background-color: $grey;
         }

@@ -7,12 +7,12 @@ body {
 .upload-progress {
   width: 596px;
   height: 25px;
-  background-color: white;
+  background-color: #fff;
   margin: 10px 2px;
   clear: both; }
 
 .upload-progress .chunk {
-  background-color: green;
+  background-color: #4499ff;
   display: inline-block; }
 
 .info, .info a {
@@ -32,7 +32,7 @@ textarea {
 hr {
   margin: 2em 0;
   border: 0;
-  border-top: solid 1px #ddd; }
+  border-top: solid 1px #f3f3ff; }
   hr.clear {
     clear: both;
     border: 0; }
@@ -45,7 +45,8 @@ hr {
     list-style: none;
     padding: 0; }
   .videos a {
-    text-decoration: none; }
+    text-decoration: none;
+    color: #4499ff; }
     .videos a:hover > li {
       background-color: #f3f3ff; }
     .videos a > li {
