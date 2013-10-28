@@ -289,7 +289,6 @@ function mule_upload(settings) {
                         "x-amz-date": date,
                         "x-amz-acl": settings.acl,
                         "Authorization": authorization,
-                        "Content-Disposition": "attachment; filename=" + u.file.name
                     }
                 });
             } else {
@@ -571,7 +570,6 @@ function mule_upload(settings) {
                     "x-amz-date": date,
                     "Authorization": authorization,
                     "Content-Type": u.settings.content_type,
-                    "Content-Disposition": "attachment; filename=" + u.file.name
                 },
                 body: blob
             });
@@ -700,7 +698,6 @@ function mule_upload(settings) {
                         "x-amz-date": date,
                         "Authorization": authorization,
                         "Content-Type": u.settings.content_type,
-                        "Content-Disposition": "attachment; filename=" + u.file.name
                     },
                     body: data
                 });

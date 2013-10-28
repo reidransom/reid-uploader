@@ -32,8 +32,6 @@ function reid_upload (config) {
         log_el.prepend(msg)
     }
 
-    // Return the filename's extension
-    // todo: check that this is an alpha-numeric string and make all lowercase
     function file_splitext (filename) {
         var parts = filename.split('.')
         if (parts.length === 1) {
