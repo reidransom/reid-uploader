@@ -44,16 +44,28 @@ class Video(Base):
     filesize = Column(Integer)             # bytes
     added = Column(DateTime)
 
+    status = Column(String)
+
     def total_seconds(self):
-        return float(self.duration) / 100
+        if not self.duration is None:
+            return float(self.duration) / 100
+        return None
 
     def total_bitrate(self):
-        if not self.filesize:
-            return 0
-        return int((float(self.filesize)*8/1024)/self.total_seconds())  # kilobits per second
+        total_seconds = self.total_seconds()
+        if not self.filesize is None and not total_seconds is None:
+            return int((float(self.filesize)*8/1024)/total_seconds)  # kilobits per second
+        return None
 
     def fps(self):
-        return float(self.framerate) / 1000
+        if not self.framerate is None:
+            return float(self.framerate) / 1000
+        return None
+
+    def update(self, attrs):
+        # update attributes from dict
+        for key, value in attrs.items():
+            setattr(self, key, value)
 
 Video.metadata.create_all(bind=engine)
 

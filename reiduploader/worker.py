@@ -143,20 +143,36 @@ def upload_to_s3(local_path, key=None):
     return k
 
 def _process_fullcopy(key):
+    orig_video = Video(key=key, status='downloading')
+    db.add(orig_video)
+    db.commit()
     url = helper.get_s3url(key)
     orig_path = download_url(url)
-    iphone_path, ffmpeg_data = make_iphone(orig_path)
-    orig_attrs = get_video_attrs(orig_path, get_ffmpeg_input_data(ffmpeg_data))
-    db.add(Video(**orig_attrs))
-    upload_to_s3(iphone_path)
-    iphone_attrs = get_video_attrs(iphone_path)
-    db.add(Video(**iphone_attrs))
+
+    orig_video.update(get_video_attrs(orig_path))
+    orig_video.status = 'done'
+
+    iphone_path = os.path.splitext(orig_path)[0] + '-iphone.mp4'
+    iphone_video = Video(key=os.path.basename(iphone_path), status='transcoding')
+    db.add(iphone_video)
     db.commit()
+    make_iphone(orig_path, iphone_path)
+
+    iphone_video.update(get_video_attrs(iphone_path))
+    iphone_video.status = 'uploading'
+    db.commit()
+    upload_to_s3(iphone_path)
+
+    iphone_video.status = 'done'
+    db.commit()
+
     os.remove(orig_path)
     os.remove(iphone_path)
 
 def process_s3_key(key):
+
     _process_fullcopy(key)
+
     # log.debug('process_s3_key')
     # url = helper.get_s3url(key)
     # iphone_path = url_to_iphone_video(url)

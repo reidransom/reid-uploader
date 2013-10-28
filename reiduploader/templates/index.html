@@ -13,17 +13,43 @@
         <hr />
         <ul class="videos">
         {% for video in videos %}
+            {% if loop.index0 % 2 == 0 %}<hr class="clear" />{% endif %}
             <a href="{{ video.url }}">
-                <li>{{ video.key }}
+                <li>
                     <ul>
-                        <li>{{ video.fps() }} fps</li>
-                        <li>{{ video.width }}x{{ video.height }}</li>
-                        <li>{{ video.num_audio_channels }} audio channels</li>
-                        <li>{{ video.total_seconds() }} seconds</li>
-                        <li>{{ video.filesize|default(0, true) }} Bytes</li>
-                        <li>{{ video.video_bitrate }} kb/s video</li>
-                        <li>{{ video.audio_bitrate }} kb/s audio</li>
-                        <li>{{ video.total_bitrate() }} kb/s total</li>
+                        <li><h4>{{ video.key }}</h4></li>
+                    {% if not video.status == 'done' %}
+                        <li>Status: {{ video.status|capitalize }}</li>
+                    {% endif %}
+                    {% if not video.fps() == None %}
+                        <li>Framerate: {{ video.fps() }} fps</li>
+                    {% endif %}
+                    {% if not video.width == None %}
+                        <li>Width: {{ video.width }}</li>
+                    {% endif %}
+                    {% if not video.height == None %}
+                        <li>Height: {{ video.height }}</li>
+                    {% endif %}
+                    {% if not video.num_audio_channels == None %}
+                        <li>Audio Channels: {{ video.num_audio_channels }}</li>
+                    {% endif %}
+                    {% if not video.total_seconds() == None %}
+                        <li>Duration: {{ video.total_seconds() }} seconds</li>
+                    {% endif %}
+                    {% if not video.filesize == None %}
+                        <li>Filesize: {{ video.filesize }} bytes</li>
+                    {% endif %}
+                    <!-- These are not quite adding up to the total bitrate
+                    {% if not video.video_bitrate == None %}
+                        <li>Video Bitrate: {{ video.video_bitrate }} kb/s</li>
+                    {% endif %}
+                    {% if not video.audio_bitrate == None %}
+                        <li>Audio Bitrate: {{ video.audio_bitrate }} kb/s</li>
+                    {% endif %}
+                    -->
+                    {% if not video.total_bitrate() == None %}
+                        <li>Total Bitrate: {{ video.total_bitrate() }} kb/s</li>
+                    {% endif %}
                     </ul>
                 </li>
             </a>
@@ -38,10 +64,8 @@
             $(function() {
                 reid_upload({
                     access_key: "{{ aws_access_key }}",
-                    content_type: "{{ mime_type }}",
                     bucket: "{{ bucket }}",
-                    // key: "{{ key }}"
-                    accepted_extensions: 'mov,mp4'
+                    accepted_extensions: "{{ accepted_extensions }}"
                     {% if ajax_base %}
                         , ajax_base: "{{ ajax_base }}"
                     {% endif %}
