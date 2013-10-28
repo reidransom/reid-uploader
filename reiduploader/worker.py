@@ -113,22 +113,22 @@ def make_iphone(input_path, output_path=None):
     data = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     return output_path, data
 
-def url_to_iphone_video(url, output_dir=TMPDIR):
-    log.debug('url_to_iphone_video')
-    basename = os.path.basename(urlparse(url).path)
-    output_path = os.path.join(output_dir, os.path.splitext(basename)[0] + '-iphone.mp4')
-    cmd = 'curl %s | %s -f mov -i - -vcodec libx264 -acodec libfaac -ab 128k -ar 48k -aspect 16:9 -vf yadif,scale=960x540 -x264opts cabac=1:ref=3:deblock=1,0,0:analyse=0x3,0x113:me=hex:subme=7:psy=1:psy_rd=1.00,0.00:me_range=16:chroma_me=1:trellis=1:8x8dct=1:fast_pskip=1:chroma_qp_offset=-2:threads=36:sliced_threads=0:nr=0:interlaced=0:bluray_compat=0:constrained_intra=0:bframes=3:b_pyramid=2:b_adapt=1:b_bias=0:weightb=1:open_gop=0:weightp=2:keyint=240:keyint_min=24:scenecut=40:intra_refresh=0:rc_lookahead=40:mbtree=1:crf=22:qcomp=0.60:qpmin=0:qpmax=69:qpstep=4:vbv_maxrate=17500:vbv_bufsize=17500:crf_max=0.0:nal_hrd=none -movflags faststart -y %s' % (url, FFMPEG, output_path)
-    data = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+# def url_to_iphone_video(url, output_dir=TMPDIR):
+#     log.debug('url_to_iphone_video')
+#     basename = os.path.basename(urlparse(url).path)
+#     output_path = os.path.join(output_dir, os.path.splitext(basename)[0] + '-iphone.mp4')
+#     cmd = 'curl %s | %s -f mov -i - -vcodec libx264 -acodec libfaac -ab 128k -ar 48k -aspect 16:9 -vf yadif,scale=960x540 -x264opts cabac=1:ref=3:deblock=1,0,0:analyse=0x3,0x113:me=hex:subme=7:psy=1:psy_rd=1.00,0.00:me_range=16:chroma_me=1:trellis=1:8x8dct=1:fast_pskip=1:chroma_qp_offset=-2:threads=36:sliced_threads=0:nr=0:interlaced=0:bluray_compat=0:constrained_intra=0:bframes=3:b_pyramid=2:b_adapt=1:b_bias=0:weightb=1:open_gop=0:weightp=2:keyint=240:keyint_min=24:scenecut=40:intra_refresh=0:rc_lookahead=40:mbtree=1:crf=22:qcomp=0.60:qpmin=0:qpmax=69:qpstep=4:vbv_maxrate=17500:vbv_bufsize=17500:crf_max=0.0:nal_hrd=none -movflags faststart -y %s' % (url, FFMPEG, output_path)
+#     data = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
 
-    # Create a db entry for the original video
-    data = parse_ffmpeg_data(get_ffmpeg_input_data(data))
-    data['key'] = basename
-    data['filesize'] = helper.get_bucket().get_key(basename).size
-    video = Video(**data)
-    db.add(video)
-    db.commit()
+#     # Create a db entry for the original video
+#     data = parse_ffmpeg_data(get_ffmpeg_input_data(data))
+#     data['key'] = basename
+#     data['filesize'] = helper.get_bucket().get_key(basename).size
+#     video = Video(**data)
+#     db.add(video)
+#     db.commit()
 
-    return output_path
+    # return output_path
 
 def upload_to_s3(local_path, key=None):
     if key is None:
@@ -178,11 +178,13 @@ def process_s3_key(key):
 
     _process_fullcopy(key)
 
+    # This is a more streamlined workflow which involved piping curl output to ffmpeg.
+    # It's a little more complex and doesn't work at all for prores codec.
+    #
     # log.debug('process_s3_key')
     # url = helper.get_s3url(key)
     # iphone_path = url_to_iphone_video(url)
     # upload_to_s3(iphone_path)
-
     # # Create a db entry for the iphone video
     # cmd = '%s -i %s' % (FFMPEG, iphone_path)
     # try:
@@ -195,7 +197,6 @@ def process_s3_key(key):
     # video = Video(**data)
     # db.add(video)
     # db.commit()
-
     # os.remove(iphone_path)
 
 if __name__ == "__main__":

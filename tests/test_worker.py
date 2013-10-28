@@ -69,19 +69,17 @@ class TestWorker(unittest.TestCase):
         # self.test_process_fullcopy('test-elegy.mov')
         # self.test_process_fullcopy('test-bite.mov')
 
-    def test_url_to_iphone_video(self):
-        # Setup
-        key = 'test-url-to-iphone-video.mov'
-        iphone_path = os.path.join(TMPDIR, 'test-url-to-iphone-video-iphone.mp4')
-        url = helper.get_s3url(key)
-        if not self.bucket.get_key(key):
-            worker.upload_to_s3(self.test_video, key)
+    # def test_url_to_iphone_video(self):
+    #     # Setup
+    #     key = 'test-url-to-iphone-video.mov'
+    #     iphone_path = os.path.join(TMPDIR, 'test-url-to-iphone-video-iphone.mp4')
+    #     url = helper.get_s3url(key)
+    #     if not self.bucket.get_key(key):
+    #         worker.upload_to_s3(self.test_video, key)
 
-        # Test
-        worker.url_to_iphone_video(url)
-        self.assertTrue(os.path.isfile(iphone_path))
-
-        # todo: test that original video made it to the db
+    #     # Test
+    #     worker.url_to_iphone_video(url)
+    #     self.assertTrue(os.path.isfile(iphone_path))
 
     def test_upload_to_s3(self):
         key = 'test-upload-to-s3.mov'
