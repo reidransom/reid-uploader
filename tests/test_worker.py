@@ -39,15 +39,12 @@ class TestWorker(unittest.TestCase):
         self.bucket.delete_key(iphone_key)
 
         # Test
+        self.assertIsNone(self.bucket.get_key(iphone_key))
         worker.process_s3_key(key)
         self.assertIsNotNone(self.bucket.get_key(iphone_key))
-        self.assertIsNone(self.bucket.get_key('does-not-exist.mp4')) # s3 sanity check
-
         # todo: test that iphone video made it to the db
 
     def test_process_fullcopy(self, key='test-process-fullcopy.mov'):
-        # key = 'test-process-fullcopy.mov'
-        # iphone_key = 'test-process-fullcopy-iphone.mp4'
         iphone_key = os.path.splitext(key)[0] + '-iphone.mp4'
         if not self.bucket.get_key(key):
             worker.upload_to_s3(self.test_video, key)
@@ -65,6 +62,7 @@ class TestWorker(unittest.TestCase):
 
     def test_urls(self):
         pass
+        # Include additional test URLs here
         # self.test_process_fullcopy('test-stormy.mov')
         # self.test_process_fullcopy('test-elegy.mov')
         # self.test_process_fullcopy('test-bite.mov')

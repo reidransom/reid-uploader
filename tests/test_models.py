@@ -1,9 +1,11 @@
+import os
 import unittest
 
 from reiduploader import helper, worker
 from reiduploader.models import *
 
-from settings import *
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+TEST_VIDEO = os.path.join(DATA_DIR, 'test-h264-24fps-5s.mov')
 
 class TestModels(unittest.TestCase):
 
@@ -15,7 +17,7 @@ class TestModels(unittest.TestCase):
         keyname = 'test-create-video.mov'
         key = bucket.get_key(keyname)
         if not key:
-            key = worker.upload_to_s3(VID_5S, keyname)
+            key = worker.upload_to_s3(TEST_VIDEO, keyname)
         attrs = {
             'key': keyname,
             'video_bitrate': 1095,
@@ -24,13 +26,13 @@ class TestModels(unittest.TestCase):
             'width': 640,
             'height': 360,
             'num_audio_channels': 2,
-            'duration': 953046,
+            'duration': 3180,
             # 'filesize':
         }
         video = Video(**attrs)
         db.add(video)
         db.commit()
-        self.assertEqual(1, video.id)
+        self.assertIsInstance(video.id, int)
         self.assertEqual(attrs['key'],                video.key)
         self.assertEqual(attrs['video_bitrate'],      video.video_bitrate)
         self.assertEqual(attrs['audio_bitrate'],      video.audio_bitrate)
@@ -42,8 +44,6 @@ class TestModels(unittest.TestCase):
         self.assertEqual(31.8,                        video.total_seconds())
         # self.assertEqual(747349,                      video.filesize())
 
-        for row in db.query(Video).all():
-            print row.key
 
 
 
