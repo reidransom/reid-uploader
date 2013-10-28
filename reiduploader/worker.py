@@ -5,6 +5,7 @@ import os
 import subprocess
 import re
 from urlparse import urlparse
+import shlex
 
 from boto.s3.key import Key
 
@@ -103,16 +104,13 @@ def download_url(url, output_dir=TMPDIR, output_basename=None):
     subprocess.call(cmd)
     return output_path
 
-def make_iphone(input_path, output_dir=None, output_basename=None):
-    if not output_basename:
-        output_basename = os.path.splitext(os.path.basename(input_path))[0] + '-iphone.mp4'
-    if not output_dir:
-        output_dir = os.path.dirname(input_path)
-    output_path = os.path.join(output_dir, output_basename)
+def make_iphone(input_path, output_path=None):
+    if not output_path:
+        output_path = os.path.splitext(input_path)[0] + '-iphone.mp4'
     cmd = '%s -i %s %s -y %s' % \
         (FFMPEG, input_path, _ffmpeg_iphone_preset, output_path)
-    # todo: call this w/o shell=True
-    data = subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+    cmd = [FFMPEG, '-i', input_path] + shlex.split(_ffmpeg_iphone_preset) + ['-y', output_path]
+    data = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     return output_path, data
 
 def url_to_iphone_video(url, output_dir=TMPDIR):
