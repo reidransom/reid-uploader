@@ -5,7 +5,7 @@ def get_aws(path):
 	with open(path, 'r') as fp:
 		data = fp.read()
 		fp.close()
-	return data.strip().split('\n')
+	return data.strip().split(' ')
 
 # this should be outside your web root
 CONFIG_ROOT = '/home/reidransom/.reiduploader'
@@ -15,33 +15,33 @@ aws_access_key = aws_secret = ffmpeg = tmpdir = None
 # if config_root doesn't exist look for ~/.reiduploader (for dev)
 for path in [CONFIG_ROOT, os.path.join(os.path.expanduser('~'), '.reiduploader')]:
 	if os.path.isdir(path):
-		# get aws config from ~/.aws - format should be `aws_access_key\naws_secret`
+
+		# get aws config from aws.txt (format should be `aws_access_key aws_secret`)
 		# should be readable by apache
-		aws_access_key, aws_secret = get_aws(os.path.join(path, 'aws.txt'))
+		aws = get_aws(os.path.join(path, 'aws.txt'))
+		AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY', aws[0])
+		AWS_SECRET = os.environ.get('AWS_SECRET', aws[1])
+
 		# should be executable by apache
-		ffmpeg = os.path.join(path, 'ffmpeg')
+		FFMPEG = os.environ.get('FFMPEG', os.path.join(path, 'ffmpeg'))
+
 		# should be read/writeable by apache
-		tmpdir = os.path.join(path, 'tmp')
-		database_url = 'sqlite:///' + os.path.join(path, 'database.db')
+		TMPDIR = os.path.join(path, 'tmp')
+		ENGINE = os.environ.get('DATABASE_URL', 'sqlite:///' + os.path.join(path, 'database.db'))
+
 		break
 
 BUCKET = os.environ.get('BUCKET', "reid-uploader")
-AWS_SECRET = os.environ.get('AWS_SECRET', aws_secret)
-AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY', aws_access_key)
 DEBUG = bool(int(os.environ.get('DEBUG', 1)))
-ENGINE = os.environ.get('DATABASE_URL', database_url)
 PORT = int(os.environ.get('PORT', 5000))
 CHUNK_SIZE = 6 * 1024 * 1024  # CAREFUL! If you modify this, you have to
                               # clear the chunk database; I recommend
                               # setting it before having any real upload data
-FFMPEG = os.environ.get('FFMPEG', ffmpeg)
-TMPDIR = tmpdir
 
 MIME_TYPES = {
 	'mp4': 'video/mp4',
 	'mov': 'video/quicktime',
-}
-# MIME_TYPES.keys() is the list of allowed file extensions.
+} # MIME_TYPES.keys() is the list of allowed file extensions.
 
 # Fail on config errors
 
