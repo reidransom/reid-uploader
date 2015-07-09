@@ -180,17 +180,22 @@ def _process_fullcopy(key):
         iphone_video = Video(key=os.path.basename(iphone_path), status='transcoding')
         db.add(iphone_video)
         db.commit()
-        make_iphone(orig_path, iphone_path, preset)
 
-        iphone_video.update(get_video_attrs(iphone_path))
-        iphone_video.status = 'uploading'
+        try:
+            make_iphone(orig_path, iphone_path, preset)
+            iphone_video.update(get_video_attrs(iphone_path))
+        except:
+            iphone_video.status = 'transcoding error'
+        else:
+            iphone_video.status = 'uploading'
+
         db.commit()
-        upload_to_s3(iphone_path)
 
-        iphone_video.status = 'done'
-        db.commit()
-
-        os.remove(iphone_path)
+        if iphone_video.status = 'uploading':
+            upload_to_s3(iphone_path)
+            iphone_video.status = 'done'
+            db.commit()
+            os.remove(iphone_path)
 
     os.remove(orig_path)
 
