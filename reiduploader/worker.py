@@ -11,7 +11,7 @@ from boto.s3.key import Key
 
 import helper
 from models import db, Video
-from settings import FFMPEG, TMPDIR, FFMPEG_PRESET
+from settings import FFMPEG, TMPDIR, FFMPEG_PRESETS
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -30,12 +30,31 @@ def get_ffmpeg_input_data(data):
 
 def parse_ffmpeg_data(data):
     video = {}
-    video_data = re.search('Video:.*', data, re.MULTILINE).group(0)
-    audio_data = re.search('Audio:.*', data, re.MULTILINE).group(0)
-    video['audio_bitrate'] = int(re.search(' (\d+) kb/s', audio_data).group(1))
-    video['video_bitrate'] = int(re.search(' (\d+) kb/s', video_data).group(1))
-    video['framerate'] = int(float(re.search(' ([\d\.]+) fps', video_data).group(1))*1000)
-    video['width'], video['height'] = map(int, re.search(', (\d+)x(\d+)', video_data).groups())
+    try:
+        video_data = re.search('Video:.*', data, re.MULTILINE).group(0)
+    except AttributeError:
+        video_data = ''
+    try:
+        audio_data = re.search('Audio:.*', data, re.MULTILINE).group(0)
+    except AttributeError:
+        audio_data = ''
+    try:
+        video['audio_bitrate'] = int(re.search(' (\d+) kb/s', audio_data).group(1))
+    except AttributeError:
+        video['audio_bitrate'] = 0
+    try:
+        video['video_bitrate'] = int(re.search(' (\d+) kb/s', video_data).group(1))
+    except AttributeError:
+        video['video_bitrate'] = 0
+    try:
+        video['framerate'] = int(float(re.search(' ([\d\.]+) fps', video_data).group(1))*1000)
+    except AttributeError:
+        video['framerate'] = 0
+    try:
+        video['width'], video['height'] = map(int, re.search(', (\d+)x(\d+)', video_data).groups())
+    except AttributeError:
+        video['width'] = 0
+        video['height'] = 0
 
     # taken from ffmpeg/libavutil/channel_layout.c
     channel_layout_map = {
@@ -66,15 +85,21 @@ def parse_ffmpeg_data(data):
         "octagonal":   8,
         "downmix":     2,
     }
-    video['num_audio_channels'] = channel_layout_map[
-        re.search(', (%s),' % '|'.join(channel_layout_map.keys()), audio_data).group(1)
-    ]
+    try:
+        video['num_audio_channels'] = channel_layout_map[
+            re.search(', (%s),' % '|'.join(channel_layout_map.keys()), audio_data).group(1)
+        ]
+    except AttributeError:
+        video['num_audio_channels'] = 0
 
-    hours, minutes, seconds, decimal = map(int, re.search(
-        'Duration: (\d\d)\:(\d\d)\:(\d\d)\.(\d\d)',
-        data,
-        re.MULTILINE).groups())
-    video['duration'] = (hours*3600 + minutes*60 + seconds)*100 + decimal
+    try:
+        hours, minutes, seconds, decimal = map(int, re.search(
+            'Duration: (\d\d)\:(\d\d)\:(\d\d)\.(\d\d)',
+            data,
+            re.MULTILINE).groups())
+        video['duration'] = (hours*3600 + minutes*60 + seconds)*100 + decimal
+    except AttributeError:
+        video['duration'] = 0
     return video
 
 def get_video_attrs(path, ffmpeg_data=None):
@@ -95,10 +120,12 @@ def download_url(url):
     subprocess.call(cmd)
     return output_path
 
-def make_iphone(input_path, output_path=None):
+def make_iphone(input_path, output_path=None, preset=None):
+    if not preset:
+        preset = FFMPEG_PRESETS.keys()[0]
     if not output_path:
-        output_path = os.path.splitext(input_path)[0] + '-iphone.mp4'
-    cmd = [FFMPEG, '-i', input_path] + shlex.split(FFMPEG_PRESET) + ['-y', output_path]
+        output_path = os.path.splitext(input_path)[0] + preset
+    cmd = [FFMPEG, '-i', input_path] + shlex.split(FFMPEG_PRESETS[preset]) + ['-y', output_path]
     data = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     return output_path, data
 
@@ -146,22 +173,26 @@ def _process_fullcopy(key):
     orig_video.update(get_video_attrs(orig_path))
     orig_video.status = 'done'
 
-    iphone_path = os.path.splitext(orig_path)[0] + '-iphone.mp4'
-    iphone_video = Video(key=os.path.basename(iphone_path), status='transcoding')
-    db.add(iphone_video)
-    db.commit()
-    make_iphone(orig_path, iphone_path)
+    for preset in FFMPEG_PRESETS.iterkeys():
 
-    iphone_video.update(get_video_attrs(iphone_path))
-    iphone_video.status = 'uploading'
-    db.commit()
-    upload_to_s3(iphone_path)
+        # Transcode/Upload based on ffmpeg preset
+        iphone_path = os.path.splitext(orig_path)[0] + preset
+        iphone_video = Video(key=os.path.basename(iphone_path), status='transcoding')
+        db.add(iphone_video)
+        db.commit()
+        make_iphone(orig_path, iphone_path, preset)
 
-    iphone_video.status = 'done'
-    db.commit()
+        iphone_video.update(get_video_attrs(iphone_path))
+        iphone_video.status = 'uploading'
+        db.commit()
+        upload_to_s3(iphone_path)
+
+        iphone_video.status = 'done'
+        db.commit()
+
+        os.remove(iphone_path)
 
     os.remove(orig_path)
-    os.remove(iphone_path)
 
 def process_s3_key(key):
 

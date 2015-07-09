@@ -43,16 +43,18 @@ CHUNK_SIZE = 6 * 1024 * 1024
 MIME_TYPES = {
 	'mp4': 'video/mp4',
 	'mov': 'video/quicktime',
+	'webm': 'video/webm',
 } # MIME_TYPES.keys() is the list of allowed file extensions.
 
 FFMPEG_PRESETS = {
-	'main': '-vcodec libx264 -acodec libfaac -ab 128k -ar 48k -aspect 16:9 -vf yadif,scale=960x540 -x264opts cabac=1:ref=3:deblock=1,0,0:analyse=0x3,0x113:me=hex:subme=7:psy=1:psy_rd=1.00,0.00:me_range=16:chroma_me=1:trellis=1:8x8dct=1:fast_pskip=1:chroma_qp_offset=-2:threads=36:sliced_threads=0:nr=0:interlaced=0:bluray_compat=0:constrained_intra=0:bframes=3:b_pyramid=2:b_adapt=1:b_bias=0:weightb=1:open_gop=0:weightp=2:keyint=240:keyint_min=24:scenecut=40:intra_refresh=0:rc_lookahead=40:mbtree=1:crf=22:qcomp=0.60:qpmin=0:qpmax=69:qpstep=4:vbv_maxrate=17500:vbv_bufsize=17500:crf_max=0.0:nal_hrd=none -movflags faststart',
-	'baseline': '-vcodec libx264 -b 1.5M -bf 0 -refs 1 -weightb 0 -8x8dct 0 -level 30 -acodec libfaac -ab 128k -ac 2 -ar 48k -aspect 16:9 -vf yadif,scale=640:360 -movflags faststart'
-}
 
-# `main` is supported in iPhone 4 and later only.  If you need to support iPhone 3GS or earlier,
-# you should use `baseline`.
-FFMPEG_PRESET = FFMPEG_PRESETS['main']
+        # from <https://trac.ffmpeg.org/wiki/Encode/H.264>
+        '-edx.mp4': '-c:v libx264 -preset slow -crf 22 -vf scale=960:540 -c:a aac -b:a 128k -strict -2',
+
+        # from <https://trac.ffmpeg.org/wiki/Encode/VP8>
+        '-edx.webm': '-c:v libvpx -crf 12 -b:v 1M -vf scale=720:404 -c:a libvorbis -b:a 128k',
+
+}
 
 # Fail on config errors
 def config_fail(str):
