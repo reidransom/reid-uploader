@@ -44,3 +44,4 @@ ignore
 env
 database.db
 .sass-cache
+ignore
