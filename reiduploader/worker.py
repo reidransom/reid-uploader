@@ -191,7 +191,7 @@ def _process_fullcopy(key):
 
         db.commit()
 
-        if iphone_video.status = 'uploading':
+        if iphone_video.status == 'uploading':
             upload_to_s3(iphone_path)
             iphone_video.status = 'done'
             db.commit()
