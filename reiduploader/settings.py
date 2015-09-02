@@ -41,6 +41,7 @@ PORT = int(os.environ.get('PORT', 5000))
 CHUNK_SIZE = 6 * 1024 * 1024
 
 MIME_TYPES = {
+	'm4v': 'video/m4v',
 	'mp4': 'video/mp4',
 	'mov': 'video/quicktime',
 	'webm': 'video/webm',
