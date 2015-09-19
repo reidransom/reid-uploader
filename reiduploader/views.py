@@ -187,20 +187,19 @@ from sqlalchemy import desc
 
 @app.route("/")
 def index():
-    #videos = db.query(Video).all()
-    #for i in range(len(videos)):
-    #    videos[i].url = helper.get_s3url(videos[i].key)
     videos = db.query(Video).order_by(desc(Video.id)).limit(100)
+    vid_urls = []
     for vid in videos:
-            vid.url = helper.get_s3url(vid.key)
+        vid_urls.append(helper.get_s3url(vid.key))
     return render_template(
-            'index.html',
-            aws_access_key=AWS_ACCESS_KEY,
-            bucket=BUCKET,
-            accepted_extensions=','.join(MIME_TYPES.keys()),
-            mime_types=json.dumps(MIME_TYPES),
-            videos=videos,
-        )
+        'index.html',
+        aws_access_key=AWS_ACCESS_KEY,
+        bucket=BUCKET,
+        accepted_extensions=','.join(MIME_TYPES.keys()),
+        mime_types=json.dumps(MIME_TYPES),
+        videos=videos,
+        vid_urls=vid_urls,
+    )
 
 if app.debug:
     app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {

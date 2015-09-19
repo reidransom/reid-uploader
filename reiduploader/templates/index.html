@@ -14,7 +14,7 @@
         <ul class="videos">
         {% for video in videos %}
             {% if loop.index0 % 2 == 0 %}<hr class="clear" />{% endif %}
-            <a href="{{ video.url }}">
+            <a href="{{ vid_urls[loop.index0] }}">
                 <li>
                     <ul>
                         <li><h4>{{ video.key }}</h4></li>
