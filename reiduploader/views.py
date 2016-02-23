@@ -187,7 +187,7 @@ from sqlalchemy import desc
 
 @app.route("/")
 def index():
-    videos = db.query(Video).order_by(desc(Video.id)).limit(100)
+    videos = db.query(Video).order_by(desc(Video.id)).limit(200)
     vid_urls = []
     for vid in videos:
         vid_urls.append(helper.get_s3url(vid.key))
