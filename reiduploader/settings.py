@@ -45,6 +45,9 @@ MIME_TYPES = {
 	'mp4': 'video/mp4',
 	'mov': 'video/quicktime',
 	'webm': 'video/webm',
+	'pdf': 'application/pdf',
+        'doc': 'application/msword',
+        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 } # MIME_TYPES.keys() is the list of allowed file extensions.
 
 FFMPEG_PRESETS = {
