@@ -53,8 +53,11 @@ class Video(Base):
 
     def total_bitrate(self):
         total_seconds = self.total_seconds()
-        if not self.filesize is None and not total_seconds is None:
-            return int((float(self.filesize)*8/1024)/total_seconds)  # kilobits per second
+        try:
+            if not self.filesize is None and not total_seconds is None:
+                return int((float(self.filesize)*8/1024)/total_seconds)  # kilobits per second
+        except:
+            return None
         return None
 
     def fps(self):
