@@ -8,7 +8,7 @@ def get_bucket():
 	return conn.create_bucket(BUCKET)
 
 def get_s3url(key):
-	return 'http://%s.s3.amazonaws.com/%s' % (BUCKET, key)
+	return 'https://%s.s3.amazonaws.com/%s' % (BUCKET, key)
 
 def get_mimetype(filename):
     return MIME_TYPES[os.path.splitext(filename)[1][1:]]
