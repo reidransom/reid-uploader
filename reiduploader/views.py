@@ -185,9 +185,26 @@ def upload_action(action):
 
 from sqlalchemy import desc
 
-@app.route("/")
-def index():
-    videos = db.query(Video).order_by(desc(Video.id)).limit(200)
+PER_PAGE = 4
+
+@app.route("/", defaults={'page': 1})
+@app.route("/page/<int:page>")
+def index(page):
+    count = db.query(Video).count()
+    start = (page-1) * PER_PAGE
+    num_pages = ((count-1) / PER_PAGE) + 1
+
+    prev_url = None
+    if page > 1:
+        prev_url = '/page/{}'.format(page-1)
+    next_url = None
+    if count > start + PER_PAGE:
+        next_url = '/page/{}'.format(page+1)
+
+    videos = db.query(Video).order_by(desc(Video.id))
+    if page > 1:
+        videos = videos.offset(start)
+    videos = videos.limit(PER_PAGE)
     vid_urls = []
     for vid in videos:
         vid_urls.append(helper.get_s3url(vid.key))
@@ -199,6 +216,10 @@ def index():
         mime_types=json.dumps(MIME_TYPES),
         videos=videos,
         vid_urls=vid_urls,
+        prev_url=prev_url,
+        next_url=next_url,
+        page=page,
+        num_pages=num_pages,
     )
 
 if app.debug:
