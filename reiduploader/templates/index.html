@@ -59,7 +59,13 @@
         <hr />
         <center>
           <a {% if prev_url %}href='{{ prev_url }}'{% else %}disabled{% endif %}>Previous</a>
-          (Page {{ page }} of {{ num_pages }})
+          (Page
+          <select id='id_page'>
+            {% for p in page_list %}
+            <option {% if p == page %}selected{% endif %}>{{ p }}</option>
+            {% endfor %}
+          </select>
+          of {{ num_pages }})
           <a {% if next_url %}href='{{ next_url }}'{% else %}disabled{% endif %}>Next</a>
         </center>
         <script type="text/javascript" src="/static/js/jquery-1.10.2.js"></script>
@@ -76,6 +82,10 @@
                     , ajax_base: '{{ ajax_base }}'
                 {% endif %}
                 })
+            })
+            var $page = $('#id_page')
+            $page.change(function () {
+              window.location.pathname = '/page/' + $page.val()
             })
         </script>
     </body>

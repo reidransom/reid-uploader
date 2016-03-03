@@ -220,6 +220,7 @@ def index(page):
         next_url=next_url,
         page=page,
         num_pages=num_pages,
+        page_list=range(1, num_pages+1),
     )
 
 if app.debug:
