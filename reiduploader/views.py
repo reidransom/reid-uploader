@@ -185,7 +185,7 @@ def upload_action(action):
 
 from sqlalchemy import desc
 
-PER_PAGE = 4
+PER_PAGE = 100
 
 @app.route("/", defaults={'page': 1})
 @app.route("/page/<int:page>")
