@@ -109,11 +109,21 @@ function reid_upload (config) {
         },
         on_init: function() {
             uplog("Uploader initialized\n");
+            var urlParams = new URLSearchParams(window.location.search);
+            var msg = urlParams.get('msg');
+            if (msg) {
+              uplog(msg + '\n')
+            }
+            var url = urlParams.get('url');
+            if (url) {
+              uplog(url + '\n');
+            }
         },
         on_complete: function() {
-            var url = "http://" + config.bucket + ".s3.amazonaws.com/" + this.settings.key;
+            var url = "https://" + config.bucket + ".s3.amazonaws.com/" + this.settings.key;
             uplog("Upload complete!\n");
             uplog("The file url is " + url + ".\n");
+            window.location = window.location.protocol + '//' + window.location.host + window.location.pathname + '?msg=success&url=' + encodeURIComponent(url)
         },
         on_chunk_uploaded: function() {
             uplog("Chunk finished uploading\n");

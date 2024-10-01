@@ -16,7 +16,6 @@ def rsync(src, dest, exclude=['*.pyc'], args=['--checksum', '--archive', '--verb
     args.extend(map(lambda s: '--exclude ' + s, exclude))
     args = ' '.join(args)
     cmd = 'rsync %(args)s %(src)s %(dest)s' % locals()
-    print cmd
     bash(cmd)
 
 def stage():
@@ -40,13 +39,13 @@ def test():
     bash('python -m unittest discover')
 
 if __name__ == '__main__':
-    
+
     if len(sys.argv) < 2:
         sys.stderr.write(usage())
         sys.exit(1)
     elif not sys.argv[1] in cmds:
         sys.stderr.write(usage())
         sys.exit(1)
-    
+
     locals()[sys.argv[1]]()
     sys.exit()

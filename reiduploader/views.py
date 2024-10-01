@@ -6,7 +6,6 @@ import json
 from hashlib import sha1
 
 from flask import Flask, request, render_template
-from werkzeug import SharedDataMiddleware
 
 import helper
 from models import db, Upload, Video
@@ -25,9 +24,13 @@ def teardown_db(exception=None):
 ## Helper Functions
 
 def _process_string(string):
-    return base64.b64encode(
-        hmac.new(AWS_SECRET,
-                 string, sha1).digest())
+    ret = base64.b64encode(
+        hmac.new(AWS_SECRET.encode('UTF-8'), string.encode(), sha1).digest()
+    ).decode()
+    try:
+        return ret.decode()
+    except AttributeError:
+        return ret
 
 def _http_date():
     return time.strftime("%a, %d %b %Y %X %Z", time.localtime())
@@ -66,8 +69,6 @@ def start_worker(key):
     # start up the worker process
     import subprocess
     worker = os.path.join(os.path.dirname(__file__), 'worker.py')
-    print worker
-    print key
     subprocess.Popen([worker, key]).pid
 
 ## URLs
@@ -86,7 +87,7 @@ def upload_action(action):
         last_modified = request.args['last_modified']
         chunk = int(request.args['chunk'])
 
-        if filesize > CHUNK_SIZE:
+        if int(filesize) > CHUNK_SIZE:
             try:
                 u = db.query(Upload).filter(
                     Upload.filename == filename,
@@ -121,7 +122,7 @@ def upload_action(action):
         delete_signature, _ = _action_delete(key, upload_id, date)
         num_chunks = int(request.args['num_chunks'])
         chunk_signatures = dict([(chunk, (_action_chunk(key, upload_id, chunk, mime_type, date)))
-                                for chunk in xrange(1, num_chunks + 1)])
+                                for chunk in range(1, num_chunks + 1)])
 
         return json.dumps({
             'list_signature': [list_signature, date],
@@ -192,7 +193,7 @@ PER_PAGE = 100
 def index(page):
     count = db.query(Video).count()
     start = (page-1) * PER_PAGE
-    num_pages = ((count-1) / PER_PAGE) + 1
+    num_pages = int(((count-1) / PER_PAGE) + 1)
 
     prev_url = None
     if page > 1:
@@ -222,11 +223,6 @@ def index(page):
         num_pages=num_pages,
         page_list=range(1, num_pages+1),
     )
-
-if app.debug:
-    app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
-        '/': os.path.join(os.path.dirname(__file__), '')
-    })
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=PORT)

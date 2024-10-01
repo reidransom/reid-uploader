@@ -8,7 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from settings import ENGINE
 
 ## The Upload DB Model
-engine = create_engine(ENGINE, convert_unicode=True)
+engine = create_engine(ENGINE)
 db = scoped_session(sessionmaker(
     autocommit=False, autoflush=True, bind=engine))
 

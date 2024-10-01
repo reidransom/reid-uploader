@@ -46,3 +46,4 @@ database.db
 .sass-cache
 ignore
 bower_components
+scratch
