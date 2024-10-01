@@ -16,7 +16,7 @@ function build {
 }
 
 function deploy {
-  rsync -av ./ stage.r2ware.app:reid-uploader/
+  rsync -av --exclude=.git --exclude=__pycache__ ./ stage.r2ware.app:reid-uploader/
 }
 
 function help {
